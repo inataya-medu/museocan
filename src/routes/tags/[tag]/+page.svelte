@@ -9,7 +9,7 @@
 
 <svelte:head>
 	<title>{data.tag.name} | {config.siteTitle}</title>
-	<meta name="description" content={`Billets et publications associés au tag ${data.tag.name}`} />
+	<meta name="description" content={`Ressources associées au tag ${data.tag.name}`} />
 </svelte:head>
 
 <h1>Tag: #{data.tag.name}</h1>
@@ -27,6 +27,24 @@
 			date={post.date}
 			readingTime={post.readingTime}
 			tags={post.tags}
+			baseRoute="/blog"
+		/>
+	{/each}
+</section>
+
+<section aria-label={`Cours pour le tag ${data.tag.name}`}>
+	<h2>Cours</h2>
+	{#if data.cours.length === 0}
+		<p>Aucun cours pour ce tag.</p>
+	{/if}
+	{#each data.cours as post (post.slug)}
+		<ArticleCard
+			slug={post.slug}
+			title={post.title}
+			date={post.date}
+			readingTime={post.readingTime}
+			tags={post.tags}
+			baseRoute="/cours"
 		/>
 	{/each}
 </section>

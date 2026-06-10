@@ -41,4 +41,4 @@
 
 <TagList tags={metadata.tags} />
 
-<PostNavigation {previousPost} {nextPost} />
+<PostNavigation {previousPost} {nextPost} baseRoute="/cours" />

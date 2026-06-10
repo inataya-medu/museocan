@@ -1,12 +1,30 @@
 import type { PageServerLoad } from './$types';
 
 import { loadPublishedPosts } from '$lib/utilities/loadPublishedPosts';
+import { loadPublishedCours } from '$lib/utilities/loadPublishedCours';
 import { loadZoteroTaggedPublications } from '$lib/utilities/loadZoteroPublications';
-import { getTagSummaries } from '$lib/utilities/tags';
+import { getTagSummaries, type TagSummary } from '$lib/utilities/tags';
+
+const mergeTagSummaries = (...groups: TagSummary[][]): TagSummary[] => {
+	const bySlug = new Map<string, TagSummary>();
+
+	for (const group of groups) {
+		for (const summary of group) {
+			const current = bySlug.get(summary.slug);
+			if (current) {
+				current.count += summary.count;
+			} else {
+				bySlug.set(summary.slug, { ...summary });
+			}
+		}
+	}
+
+	return Array.from(bySlug.values()).sort((a, b) => a.tag.localeCompare(b.tag, 'fr'));
+};
 
 export const load: PageServerLoad = async ({ fetch }) => {
-	const posts = await loadPublishedPosts();
-	const postTags = getTagSummaries(posts);
+	const [posts, cours] = await Promise.all([loadPublishedPosts(), loadPublishedCours()]);
+	const postTags = mergeTagSummaries(getTagSummaries(posts), getTagSummaries(cours));
 
 	let publicationTags: ReturnType<typeof getTagSummaries> = [];
 	try {

@@ -9,14 +9,16 @@
 	type Props = {
 		previousPost?: NavigationPost | null;
 		nextPost?: NavigationPost | null;
+		baseRoute?: '/blog' | '/cours';
 	};
 
 	let {
 		previousPost = null,
-		nextPost = null
+		nextPost = null,
+		baseRoute = '/blog'
 	}: Props = $props();
 
-	const url = (slug: string) => resolve('/blog/[slug]', { slug });
+	const url = (slug: string) => resolve(`${baseRoute}/[slug]`, { slug });
 </script>
 
 {#if previousPost || nextPost}
