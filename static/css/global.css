@@ -1,0 +1,15 @@
+:root {
+    color: #000;
+}
+
+/* Neutraliser les styles MVP.css pour les éléments de code Prism */
+/* Laisse les styles de prism.css s'appliquer sans interférence */
+code[class*="language-"],
+pre[class*="language-"] {
+    background-color: revert;
+    border-radius: revert;
+    color: revert;
+    display: revert;
+    margin: revert;
+    padding: revert;
+}

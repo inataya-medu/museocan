@@ -1,0 +1,66 @@
+name: Deploy Static SvelteKit Site
+
+on:
+  push:
+    branches:
+      - main # Change this to master if needed
+
+permissions:
+  contents: read
+
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v5
+
+      - name: Install Node.js
+        uses: actions/setup-node@v5
+        with:
+          node-version: 25
+
+      - name: Install Dependencies
+        run: npm install
+
+      - name: Update submodule reference and copy assets in static folder
+        run: |
+          [ -f .gitmodules ] && git submodule sync --recursive && git submodule update --init --recursive || echo "No submodules configured."
+          [ -f ./update_submodules.sh ] && sh ./update_submodules.sh || echo "update_submodules.sh not found, skipping."
+
+      - name: Build Application
+        # Set repository variable BASE_PATH when needed.
+        env:
+          BASE_PATH: ${{ vars.BASE_PATH || '' }}
+        run: npm run build
+
+      - name: Prevent GitHub Jekyll Processing
+        # Fixes 404 errors on SvelteKit folders starting with underscores
+        run: touch build/.nojekyll
+
+      - name: Setup Pages
+        uses: actions/configure-pages@v6
+
+      - name: Upload Artifacts
+        uses: actions/upload-pages-artifact@v5
+        with:
+          # this should match the `pages` option in your adapter-static options
+          path: 'build/'
+
+  deploy:
+    runs-on: ubuntu-latest
+    needs: build
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v5
