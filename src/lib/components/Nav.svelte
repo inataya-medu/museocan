@@ -3,7 +3,7 @@
 	import { page } from '$app/state';
 	import { navItems, siteTitle } from '$lib/config';
 
-	type NavRoute = '/' | '/blog' | '/tags' | '/publications' | '/a-propos';
+	type NavRoute = '/' | '/cours' | '/blog' | '/tags' | '/publications' | '/a-propos';
 
 	const visibleItems = navItems.filter((item) => !item.hidden);
 	let pathname = $derived(page.url.pathname);

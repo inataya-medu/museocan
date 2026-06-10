@@ -60,6 +60,11 @@ export const navItems = [
 		hidden: true // Hide this item from menus
 	},
 	{
+		title: 'Cours',
+		route: '/cours'
+		// hidden omitted = visible by default
+	},
+	{
 		title: 'Blog',
 		route: '/blog'
 		// hidden omitted = visible by default
