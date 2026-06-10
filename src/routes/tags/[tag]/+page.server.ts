@@ -31,14 +31,15 @@ const mergeTagSummaries = (...groups: TagSummary[][]): TagSummary[] => {
 
 export const load: PageServerLoad = async ({ params, fetch }) => {
 	const [allPosts, allCours] = await Promise.all([loadPublishedPosts(), loadPublishedCours()]);
-	const postTagSummaries = mergeTagSummaries(getTagSummaries(allPosts), getTagSummaries(allCours));
+	const contentTagSummaries = mergeTagSummaries(getTagSummaries(allPosts), getTagSummaries(allCours));
 
-	let taggedPublications: Awaited<ReturnType<typeof loadZoteroTaggedPublications>> = [];
+	let publicationItems: Awaited<ReturnType<typeof loadZoteroTaggedPublications>> = [];
 	let publicationTagSummaries: ReturnType<typeof getTagSummaries> = [];
+	let publicationsUnavailable = false;
 
 	try {
 		const allPublications = await loadZoteroTaggedPublications(fetch);
-		taggedPublications = allPublications.filter((publication) =>
+		publicationItems = allPublications.filter((publication) =>
 			publication.tags.some((tag) => tagToSlug(tag) === params.tag)
 		);
 		publicationTagSummaries = getTagSummaries(
@@ -46,25 +47,26 @@ export const load: PageServerLoad = async ({ params, fetch }) => {
 		);
 	} catch (caught) {
 		console.warn('Unable to load Zotero publications for tag page:', caught);
-		taggedPublications = [];
+		publicationItems = [];
 		publicationTagSummaries = [];
+		publicationsUnavailable = true;
 	}
 
-	const currentPostTag = postTagSummaries.find((tag) => tag.slug === params.tag);
+	const currentContentTag = contentTagSummaries.find((tag) => tag.slug === params.tag);
 	const currentPublicationTag = publicationTagSummaries.find((tag) => tag.slug === params.tag);
 
-	if (!currentPostTag && !currentPublicationTag) {
+	if (!currentContentTag && !currentPublicationTag && !publicationsUnavailable) {
 		throw error(404, 'Tag introuvable');
 	}
 
 	const tag = {
-		name: currentPostTag?.tag || currentPublicationTag?.tag || params.tag,
+		name: currentContentTag?.tag || currentPublicationTag?.tag || params.tag,
 		slug: params.tag,
-		postCount: currentPostTag?.count ?? 0,
+		postCount: currentContentTag?.count ?? 0,
 		publicationCount: currentPublicationTag?.count ?? 0
 	};
 
-	const BLOG_RESOURCE = listByTag(allPosts, (post) => post.metadata.tags, params.tag).map((post) => ({
+	const blogResources = listByTag(allPosts, (post) => post.metadata.tags, params.tag).map((post) => ({
 		slug: post.slug,
 		baseRoute: '/blog' as const,
 		title: post.metadata.title,
@@ -73,7 +75,7 @@ export const load: PageServerLoad = async ({ params, fetch }) => {
 		tags: post.metadata.tags
 	}));
 
-	const COURS_RESOURCE = listByTag(allCours, (post) => post.metadata.tags, params.tag).map((post) => ({
+	const coursResources = listByTag(allCours, (post) => post.metadata.tags, params.tag).map((post) => ({
 		slug: post.slug,
 		baseRoute: '/cours' as const,
 		title: post.metadata.title,
@@ -82,7 +84,7 @@ export const load: PageServerLoad = async ({ params, fetch }) => {
 		tags: post.metadata.tags
 	}));
 
-	const PUBLICATIONS_RESOURCE = taggedPublications.map((publication, index) => ({
+	const publicationResources = publicationItems.map((publication, index) => ({
 		key: publication.zoteroUrl || `${params.tag}-${index}`,
 		title: publication.title,
 		formattedCitation: publication.formattedCitation,
@@ -97,9 +99,9 @@ export const load: PageServerLoad = async ({ params, fetch }) => {
 
 	return {
 		tag,
-		posts: BLOG_RESOURCE,
-		cours: COURS_RESOURCE,
-		publications: PUBLICATIONS_RESOURCE,
+		posts: blogResources,
+		cours: coursResources,
+		publications: publicationResources,
 		metadata: {
 			title: `Tag: ${tag.name}`,
 			description: `Ressources associées au tag ${tag.name}`
