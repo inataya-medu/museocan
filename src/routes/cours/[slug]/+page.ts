@@ -1,4 +1,4 @@
-import type { PageLoad } from './$types';
+import type { EntryGenerator, PageLoad } from './$types';
 import { error } from '@sveltejs/kit';
 
 import { loadPublishedCours } from '$lib/utilities/loadPublishedCours';
@@ -9,6 +9,12 @@ const toNavigationPost = (post: LoadedPost) => ({
 	title: post.metadata.title,
 	date: post.metadata.date
 });
+
+export const entries: EntryGenerator = async () => {
+	const allPosts = await loadPublishedCours();
+
+	return allPosts.map((post) => ({ slug: post.slug }));
+};
 
 export const load: PageLoad = async ({ params }) => {
 	const allPosts = await loadPublishedCours();
