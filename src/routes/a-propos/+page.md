@@ -1,29 +1,15 @@
 ---
 title: À propos
-description: En savoir plus sur le blog template d’Ouvroir
-slug: testo
+description: En savoir plus sur le séminaire de muséologie canadienne
+slug: a-propos
 ---
 
-<script>
-	import Counter from '$lib/components/Counter.svelte';
-</script>
 
 # À propos
 
-Cette page est rédigée en Markdown avec des métadonnées dans le bloc `metadata` YAML.
+Le séminaire de muséologie canadienne s’inscrit dans le cadre de l’entente de coopération existant depuis 1997 entre l’École du
+Louvre et l’Université de Montréal, destinée à élargir et perfectionner l’enseignement de muséologie dans les deux institutions. Cette collaboration a été initiée par Madame Colette Dufresne-Tassé, professeure à l’Université de Montréal.
 
-Le bloc `metadata` permet de définir :
-- Le titre de la page (pour le SEO)
-- La description (pour les moteurs de recherche)
-- D'autres métadonnées selon les besoins
-
-## Utilisation de composants Svelte
-
-Avec mdsvex et le layout global configuré dans `svelte.config.js`, tous les fichiers `.md` dans `routes/` bénéficient automatiquement :
-- Du traitement du SEO à partir des metadata (title, description)
-- Du canonical URL hérité du layout racine
-- De la possibilité d'utiliser des composants Svelte
-
-<Counter />
-
-Créez simplement un fichier `.md` avec des metadata, et le layout global s'occupe du reste !
+Ayant pour but l’initiation à la recherche appliquée en muséologie, cette formation s’organise autour d’un travail de recherche
+dans un musée canadien commanditaire d’un projet ; elle est complétée par un enseignement méthodologique (cours et visites
+de musées québécois) à l’Université de Montréal. La recherche aboutit à la rédaction d’un rapport (les rapports des promotions depuis 2011 sont consultables sur l’extranet de l’École du Louvre, rubriques « catalogue général » ou « travaux d’élèves » ; les rapports antérieurs à 2011 sont consultables à la bibliothèque).

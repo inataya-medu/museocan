@@ -1,0 +1,285 @@
+/* css since 2025-10-12 */
+
+/* color theme cf. https://web.dev/patterns/theming/hsl-starter-kit?hl=fr#css */
+
+@layer reset, theme, layout;
+
+@layer reset {
+  *, *::before, *::after {
+    box-sizing: border-box;
+  }
+}
+
+@layer theme {
+  :root {
+    /* color parameters */
+    --theme-hue: 231;
+    --theme-saturation: 69%;
+    --theme-lightness: 65%;
+    /* colors */
+    --theme-color: hsl(
+      var(--theme-hue)
+      var(--theme-saturation)
+      var(--theme-lightness)
+      );
+    --theme-color-light: hsl(
+      var(--theme-hue)
+      calc(var(--theme-saturation) / 2)
+      93% /* higher than is lighter */
+      );
+    --theme-color-dark: hsl(
+      var(--theme-hue)
+      var(--theme-saturation)
+      15% /* lower than is darker */
+      );
+    --theme-color-title: var(--theme-color);
+    /* fonts */
+    --theme-font-work: 'IBM Plex Serif', serif;
+    --theme-font-title: 'IBM Plex Serif', sans-serif;
+  }
+}
+
+@layer layout {
+  :root {
+    --layout-measure: 70ch;
+    --layout-fluid-min: 35ch;
+    --layout-default-repeat: 3;
+    --layout-default-gap: 3vmax;
+  }
+}
+
+/* Theme Switch */
+html {
+  color-scheme: light dark;
+  --color-surface-0: light-dark(
+    var(--theme-color-light), var(--theme-color-dark)
+    );
+  --color-surface-1: light-dark(
+    var(--theme-color-dark), var(--theme-color-light)
+    );
+}
+/* Light theme override */
+[data-theme='light'] {
+  color-scheme: light;
+}
+/* Dark theme override */
+[data-theme='dark'] {
+  color-scheme: dark;
+}
+
+body {
+  background-color: var(--color-surface-0);
+  color: var(--color-surface-1)
+}
+
+
+/* Typography */
+body {
+    font-family: var(--theme-font-work);
+}
+/* Typographic baseline */
+:root {
+  --base-font-size: 100%; /* par défaut 1rem, est-ce nécessaire ? */
+  --scale-factor: 1.5;
+  --line-height: 1.7;
+}
+
+body {
+  font-size: var(--base-font-size);
+  line-height: var(--line-height);
+}
+
+h1, h2, h3, h4, h5, h6 {
+  --scale-factor-calculated: var(--scale-factor);
+  font-size: calc(var(--base-font-size) * var(--scale-factor-calculated));
+  /* line-snap: baseline; */
+}
+
+h1 {
+  --scale-factor-calculated: calc(var(--scale-factor) * var(--scale-factor) * var(--scale-factor));
+}
+
+h2 {
+  --scale-factor-calculated: calc(var(--scale-factor) * var(--scale-factor));
+}
+
+h3 {
+  --scale-factor-calculated:  var(--scale-factor);
+}
+
+h4, h5, h6 {
+  --scale-factor-calculated: 1;
+}
+
+h1, h2, h3 , h4, h5, h6 {
+    font-family: var(--theme-font-title);
+    color: var(--theme-color-title);
+}
+
+sup {
+    font-size: 0.7em;
+}
+
+
+/* layout */
+body {
+  display: grid;
+  justify-content: center;
+  align-items: center;
+  min-height: 100dvh;
+  /* margin: 0; */
+  /* padding: 2rem; */
+}
+
+main {
+  max-width:calc(var(--layout-measure) - 2rem);
+}
+
+/* navigation */
+header#main-nav {
+  display: flex;
+  flex-direction: column;
+}
+
+#main-nav nav > ul {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+#main-nav nav > ul {
+  padding: 0;
+  list-style: none;
+}
+
+.hamburger {
+  display: none;
+  font-size: 1.8rem;
+  cursor: pointer;
+  margin-left: auto;
+}
+
+#toggle {
+  display: none;
+}
+
+@media only screen and (max-width: 760px) {
+  #main-nav nav > ul{
+    flex-direction: column;
+    justify-content: flex-start;
+    min-height: 100dvh;
+  }
+  #main-nav ul li{
+    margin-bottom: 2em;
+  }
+  .hamburger {
+    display: block;
+  }
+  #toggle:checked + .logo + .hamburger + .menu {
+    display: flex;
+  }
+}
+
+/* scroll progress animations */
+.progress {
+  position: fixed;
+  inset-block-start: 0;
+  inset-inline-start: 0;
+  z-index: 999;
+  inline-size: 100%;
+  block-size: 0.35rem;
+  transform-origin: left center;
+  animation:
+    scaleProgress auto linear,
+    colorChange auto linear;
+  animation-timeline: scroll(root);
+}
+
+@keyframes scaleProgress {
+  0% {
+    transform: scaleX(0);
+  }
+  100% {
+    transform: scaleX(1);
+  }
+}
+
+@keyframes colorChange {
+  0% {
+    background-color: hsl(350 78% 62%);
+  }
+  20% {
+    background-color: hsl(24 88% 63%);
+  }
+  40% {
+    background-color: hsl(48 90% 63%);
+  }
+  60% {
+    background-color: hsl(150 62% 50%);
+  }
+  80% {
+    background-color: hsl(205 82% 57%);
+  }
+  100% {
+    background-color: hsl(276 70% 62%);
+  }
+}
+
+/* nested lists with hierarchical numbering */
+ol {
+  padding-inline-start: 0;
+  margin-block-end: 1em; /* @todo harmonize with hierarchy */
+  counter-reset: section;
+}
+
+ol li {
+  display: block;
+}
+
+ol > li {
+  counter-increment: section;
+}
+
+ol > li::before {
+  content: counter(section) ". ";
+  font-weight: bolder;
+}
+
+ol > li > ol {
+  counter-reset: subsection;
+}
+
+ol > li > ol > li {
+  counter-increment: subsection;
+}
+
+ol > li > ol > li::before {
+  content: counter(section) "." counter(subsection) " ";
+  margin-inline-end: 0.3em;
+}
+
+ol > li > ol > li > ol {
+  counter-reset: subsubsection;
+}
+
+ol > li > ol > li > ol > li {
+  counter-increment: subsubsection;
+}
+
+ol > li > ol > li > ol > li::before {
+  content: counter(section) "." counter(subsection) "." counter(subsubsection) " ";
+}
+
+ol ol {
+  margin-block-end: 0;
+  padding-inline-start: 2em;
+}
+
+ol > li {
+  font-weight: bolder;
+
+}
+
+ol > li ol li {
+  font-weight: normal;
+}
