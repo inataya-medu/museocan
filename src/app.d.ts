@@ -36,6 +36,12 @@ declare global {
 
 	type BlogAuthorInput = string | BlogAuthor;
 
+	interface Heading {
+		depth: 2 | 3;
+		text: string;
+		id: string;
+	}
+
 	interface Posts {
 		slug?: string;
 		title: string;

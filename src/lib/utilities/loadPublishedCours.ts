@@ -6,6 +6,7 @@ import { normalizePostDate } from '$lib/utilities/dates';
 import { getReadingTime } from '$lib/utilities/readingTime';
 import { slugFromPath } from '$lib/utilities/slugFromPath';
 import { normalizeTags } from '$lib/utilities/tags';
+import { extractHeadings } from '$lib/utilities/extractHeadings';
 
 export type LoadedPost = {
 	slug: string;
@@ -14,6 +15,7 @@ export type LoadedPost = {
 		date: string;
 		readingTime: number;
 		tags: string[];
+		headings: Heading[];
 	};
 };
 
@@ -60,6 +62,7 @@ const loadPublishedCours = async (): Promise<LoadedPost[]> => {
 
 			const resolvedSlug = frontmatter.slug?.trim() || pathSlug;
 			const readingTime = getReadingTime(rawContent);
+			const headings = extractHeadings(rawContent);
 
 			return {
 				slug: resolvedSlug,
@@ -69,7 +72,8 @@ const loadPublishedCours = async (): Promise<LoadedPost[]> => {
 					slug: resolvedSlug,
 					date: normalizedDate,
 					readingTime,
-					tags: normalizeTags(mdsvexPost.metadata.tags)
+					tags: normalizeTags(mdsvexPost.metadata.tags),
+					headings
 				}
 			};
 		})

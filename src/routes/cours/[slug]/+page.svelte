@@ -3,6 +3,7 @@
 	import * as config from '$lib/config';
 
 	import PostNavigation from '$lib/components/PostNavigation.svelte';
+	import Toc from '$lib/components/Toc.svelte';
 	import TagList from '$lib/components/TagList.svelte';
 	import { normalizeBlogAuthors } from '$lib/utilities/authors';
 
@@ -20,6 +21,8 @@
 	<title>{metadata.title ? `${metadata.title} | ${config.siteTitle}` : config.siteTitle}</title>
 	<meta name="description" content={metadata.description || config.siteDescription} />
 </svelte:head>
+
+<Toc headings={metadata.headings}/>
 
 <Content />
 
